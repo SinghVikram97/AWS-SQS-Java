@@ -66,6 +66,11 @@ class Record{
 
 class S3Response{
     public S3ObjectResponse object;
+    public S3BucketResponse bucket;
+}
+
+class S3BucketResponse{
+    public String name;
 }
 
 class S3ObjectResponse{
@@ -76,23 +81,21 @@ class MyListener implements MessageListener{
     public void onMessage(Message message) {
         try{
             String text = ((TextMessage) message).getText();
-            System.out.println("File uploaded is");
-            System.out.println(getUploadedFileName(text));
+            RecordContainer sqsResponse=getSQSResponse(text);
+            System.out.println("AWS REGION "+sqsResponse.Records.get(0).awsRegion);
+            System.out.println("AWS BUCKET NAME "+sqsResponse.Records.get(0).s3.bucket.name);
+            System.out.println("AWS FILE NAME "+sqsResponse.Records.get(0).s3.object.key);
 
         }catch(JMSException e){
             e.printStackTrace();
         }
     }
 
-    public String getUploadedFileName(String s){
+    public RecordContainer getSQSResponse(String s){
         Gson gson=new Gson();
 
-        RecordContainer container=gson.fromJson(s.replaceAll("\\s+", ""),RecordContainer.class);
+        return gson.fromJson(s.replaceAll("\\s+", ""),RecordContainer.class);
 
-        /*System.out.println(container.Records.get(0).awsRegion);
-        System.out.println(container.Records.get(0).s3.object.key);*/
-
-        return container.Records.get(0).s3.object.key;
     }
 }
 
