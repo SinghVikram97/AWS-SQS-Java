@@ -15,7 +15,7 @@ public class Main1 {
 
         SQSConnection connection=connectionFactory.createConnection();
 
-        Session session=connection.createSession(false,Session.AUTO_ACKNOWLEDGE);
+        Session session=connection.createSession(false,Session.CLIENT_ACKNOWLEDGE);
 
         Queue queue=session.createQueue("vbedi-sqs-queue");
 
@@ -32,8 +32,10 @@ class MyListener1 implements MessageListener {
         try{
             String text = ((TextMessage) message).getText();
             System.out.println(text);
+            message.acknowledge();
 
         }catch(JMSException e){
+            System.out.println("Error processing message "+e.getMessage());
             e.printStackTrace();
         }
     }

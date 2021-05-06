@@ -4,6 +4,7 @@ import com.amazon.sqs.javamessaging.SQSConnectionFactory;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import javax.jms.*;
 import java.util.ArrayList;
@@ -88,6 +89,8 @@ class MyListener implements MessageListener{
 
         }catch(JMSException e){
             e.printStackTrace();
+        }catch (JsonSyntaxException je){
+            System.out.println("Invalid file format");
         }
     }
 
