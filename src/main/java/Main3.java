@@ -39,7 +39,7 @@ class SQSListener{
 
     public SQSConnection makeConnection() throws JMSException {
         SQSConnection sqsConnection=connection();
-        Session session=sqsConnection.createSession(false,Session.AUTO_ACKNOWLEDGE);
+        Session session=sqsConnection.createSession(false,Session.CLIENT_ACKNOWLEDGE);
         Queue queue=session.createQueue(this.queueName);
         MessageConsumer consumer=session.createConsumer(queue);
         consumer.setMessageListener(new MyListener2());
@@ -54,7 +54,15 @@ class MyListener2 implements MessageListener {
     public void onMessage(Message message) {
         try{
             String text = ((TextMessage) message).getText();
-            System.out.println(text);
+            if(text.contains("s3:TestEvent")){
+                System.out.println("Ignoring test event");
+
+            }
+            else{
+                System.out.println(text);
+
+            }
+            message.acknowledge();
 
         }catch(JMSException e){
             e.printStackTrace();
